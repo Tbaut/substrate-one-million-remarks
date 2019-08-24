@@ -1,9 +1,13 @@
+var cors = require('cors');
 const express = require("express");
 const path = require("path");
 const PORT = process.env.PORT || 5000;
+const IMAGE_SIZE = 10;
+const WS_PROVIDER = "wss://dev-node.substrate.dev"
 
 express()
   .use(express.static(path.join(__dirname, "public")))
+  .use(cors())
   .set("views", path.join(__dirname, "views"))
   .set("view engine", "ejs")
   .get("/", (req, res) => res.render("pages/index"))
@@ -43,7 +47,7 @@ function parseBuffer(buffer) {
     console.log("Bad Info");
   }
 
-  if (magic != 1337 || x > 999 || y > 999 || color > 0xffffff) {
+  if (magic != 1337 || x > IMAGE_SIZE || y > IMAGE_SIZE || color > 0xffffff) {
     console.log("Out of Bounds");
     return null;
   }
@@ -78,7 +82,7 @@ async function updateImage(bitmap, pixel) {
 async function main() {
   // Substrate node we are connected to and listening to remarks
   // const provider = new WsProvider("wss://dev-node.substrate.dev:9944");
-  const provider = new WsProvider("wss://canary-0.kusama.network");
+  const provider = new WsProvider(WS_PROVIDER);
 
   const api = await ApiPromise.create({ provider });
 
@@ -101,12 +105,11 @@ async function main() {
     console.log("file found");
   } catch {
     console.log("file NOT found");
-    bitmap = new bitmapManipulation.BMPBitmap(1000, 1000);
+    bitmap = new bitmapManipulation.BMPBitmap(IMAGE_SIZE, IMAGE_SIZE);
     bitmap.clear(bitmap.palette.indexOf(0x000000));
     bitmap.save("./public/image.bmp");
     convertToJPG();
   }
-
   // Subscribe to new blocks being produced, not necessarily finalized ones.
   const unsubscribe = await api.rpc.chain.subscribeNewHead(async header => {
     await api.rpc.chain.getBlock(header.hash, async block => {
