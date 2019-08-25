@@ -5,7 +5,16 @@ const PORT = process.env.PORT || 5000;
 const IMAGE_SIZE = 10;
 const WS_PROVIDER = "wss://dev-node.substrate.dev"
 
+const allowCrossDomain = function(req, res, next) {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Content-Length, X-Requested-With');
+
+  next();
+};
+
 express()
+  .use(allowCrossDomain)
   .use(express.static(path.join(__dirname, "public")))
   .use(cors())
   .set("views", path.join(__dirname, "views"))
