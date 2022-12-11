@@ -15,7 +15,7 @@
     "bitmap-manipulation": "^2.0.0",
     "cors": "^2.8.5",
     "ejs": "^2.5.6",
-    "express": "^4.15.2",
+    "express": "^4.17.3",
     "jimp": "^0.6.4"
   },
   "devDependencies": {
